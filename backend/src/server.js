@@ -1,8 +1,15 @@
 import express from "express";
+import cors from "cors"; // ✅ import cors
 import { supabase } from "./config/supabase.js";
 
 const app = express();
 app.use(express.json());
+
+// ✅ Enable CORS for frontend
+// Replace '*' with your frontend URL in production
+app.use(cors({
+  origin: "*" // e.g., "https://your-frontend.vercel.app"
+}));
 
 // ✅ Root route
 app.get("/", (req, res) => {
