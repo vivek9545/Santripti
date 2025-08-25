@@ -1,22 +1,44 @@
+// backend/src/config/db.js
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+import dns from "dns";
 
 dotenv.config();
 
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-  host: process.env.DB_HOST,
-  port: 6543, // Pooler port
-  dialect: "postgres",
-  dialectOptions: {
-    ssl: { require: true, rejectUnauthorized: false }, // Supabase needs SSL
-  },
-  pool: {
-    max: 5,          // don’t keep too many
-    min: 0,          // allow 0 idle
-    idle: 10000,     // close idle after 10s (important for pooler)
-    acquire: 30000,  // timeout before throwing error
-  },
-  logging: false,    // set true if debugging
-});
+// 👇 Force IPv4 resolution first (important for Render/Supabase)
+dns.setDefaultResultOrder("ipv4first");
 
-export default sequelize;
+const sequelize = new Sequelize(
+  process.env.DB_NAME,      // Database name
+  process.env.DB_USER,      // User
+  process.env.DB_PASSWORD,  // Password
+  {
+    host: process.env.DB_HOST, // use db.<project>.supabase.co (NOT pooler)
+    dialect: "postgres",
+    port: 5432,
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // Supabase needs SSL
+      },
+      connectTimeout: 60000, // helpful on Render cold starts
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      idle: 10000,
+    },
+  }
+);
+
+const connectDB = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("✅ Database connected");
+  } catch (error) {
+    console.error("❌ Database connection failed:", error);
+  }
+};
+
+export { sequelize, connectDB };
