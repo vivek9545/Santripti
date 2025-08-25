@@ -9,10 +9,12 @@ function Home() {
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/health")
-      .then(res => setMessage(res.data.status))
-      .catch(() => setMessage("Error connecting to backend"));
-  }, []);
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  
+  axios.get(`${backendUrl}/`)
+    .then(res => setMessage(res.data.message))
+    .catch(() => setMessage("Error connecting to backend"));
+}, []);
 
   return (
     <div>
