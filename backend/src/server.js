@@ -8,7 +8,10 @@ app.use(express.json());
 // ✅ Enable CORS for frontend
 // Replace '*' with your frontend URL in production
 app.use(cors({
-  origin: "https://santripti.vercel.app/" // e.g., "https://your-frontend.vercel.app"
+  origin: [
+    "http://localhost:5173",          // local frontend
+    "https://santripti.vercel.app"   // deployed frontend
+  ]
 }));
 
 // ✅ Root route
