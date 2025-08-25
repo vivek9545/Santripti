@@ -1,28 +1,18 @@
-// // backend/src/server.js
-// import app from "./app.js";
-// import { connectDB } from "./config/db.js";
-
-// const PORT = process.env.PORT || 5000;
-
-// (async () => {
-//   try {
-//     await connectDB(); // DB connection handled here
-//     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-//   } catch (error) {
-//     console.error("❌ Server failed to start:", error);
-//     process.exit(1);
-//   }
-// })();
-
-
-// backend/src/server.js
 import express from "express";
 import { supabase } from "./config/supabase.js";
 
 const app = express();
 app.use(express.json());
 
-// Example route: fetch all users from Supabase table
+// ✅ Root route
+app.get("/", (req, res) => {
+  res.json({
+    status: "success",
+    message: "🚀 Backend is live!"
+  });
+});
+
+// ✅ Example route: fetch all users from Supabase table
 app.get("/users", async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -31,12 +21,27 @@ app.get("/users", async (req, res) => {
 
     if (error) throw error;
 
-    res.json(data);
+    res.json({
+      status: "success",
+      data
+    });
   } catch (err) {
     console.error("Supabase query failed:", err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      status: "error",
+      message: err.message
+    });
   }
 });
 
+// ✅ Catch-all 404 handler for undefined routes
+app.use((req, res) => {
+  res.status(404).json({
+    status: "error",
+    message: "Route not found"
+  });
+});
+
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
