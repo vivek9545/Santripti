@@ -8,7 +8,7 @@ app.use(express.json());
 // ✅ Enable CORS for frontend
 // Replace '*' with your frontend URL in production
 app.use(cors({
-  origin: "*" // e.g., "https://your-frontend.vercel.app"
+  origin: "https://santripti.vercel.app/" // e.g., "https://your-frontend.vercel.app"
 }));
 
 // ✅ Root route
